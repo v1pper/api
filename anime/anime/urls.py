@@ -1,7 +1,6 @@
-from django.urls import path
-from .views import AchievementListView, AchievementDetailView  # Используем относительный импорт
+from django.urls import path, include
+from django.
 
 urlpatterns = [
-    path("achievements/", AchievementListView.as_view(), name="achievement_list"),
-    path("achievements/<int:pk>/", AchievementDetailView.as_view(), name="achievement_detail"),
+    path('api/',include ("api.urls") )
 ]
