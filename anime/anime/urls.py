@@ -1,6 +1,10 @@
 from django.urls import path, include
-from django.
+from django.contrib import admin
+from api.views import *
 
 urlpatterns = [
-    path('api/',include ("api.urls") )
+    path('admin/',admin.site.urls),
+    path('anime/achievements/', anime_achievements),
+    path('anime/achievements/completed/', completed_achievements),
+    path('anime/<str:tag_name>/<int:anime_id>/achievements/', anime_tag_achievements),
 ]

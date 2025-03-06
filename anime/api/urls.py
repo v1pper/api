@@ -1,7 +1,13 @@
+
 from django.urls import path
-from .views import AchievementListView, AchievementDetailView
+from .views import (
+    anime_achievements,
+    completed_achievements,
+    anime_tag_achievements
+)
 
 urlpatterns = [
-    path("achievements/", AchievementListView.as_view(), name="achievement_list"),
-    path("achievements/<int:pk>/", AchievementDetailView.as_view(), name="achievement_detail"),
+    path('anime/achievements/', anime_achievements),
+    path('anime/achievements/completed/', completed_achievements),
+    path('anime/<str:tag_name>/<int:anime_id>/achievements/', anime_tag_achievements),
 ]
