@@ -34,6 +34,13 @@ class Achievement(models.Model):
     def __str__(self):
         return f"{self.title} ({self.anime.title})"
 
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "anime_title": self.anime.title,
+            "tags":[tag.name for tag in self.tags.all()]
+        }
+
 class AchievementTag(models.Model):
     achievement = models.ForeignKey(
         Achievement,
