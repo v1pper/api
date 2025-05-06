@@ -1,38 +1,61 @@
+
 from django.db import models
 
-class Achievement(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Название")
-    description = models.TextField(verbose_name="Описание")
-    completed = models.BooleanField(default=False, verbose_name="Выполнено")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+class Anime(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):
-        return f"{self.title} - {'Выполнено' if self.completed else 'Не выполнено'}"
-
-    class Meta:
-        verbose_name = "Достижение"
-        verbose_name_plural = "Достижения"
-
+        return self.title
 
 class Tag(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Название тега")
-
+    name = models.CharField(max_length=50, unique=True)
+    
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Тег"
-        verbose_name_plural = "Теги"
+class Achievement(models.Model):
+    anime = models.ForeignKey(
+        Anime,
+        on_delete=models.CASCADE,
+        related_name='achievements'
+    )
+    tags = models.ManyToManyField(
+        Tag,
+        through='AchievementTag',  
+        related_name='achievements'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.title} ({self.anime.title})"
 
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "anime_title": self.anime.title,
+            "tags":[tag.name for tag in self.tags.all()]
+        }
 
 class AchievementTag(models.Model):
-    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE, related_name="tags")
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.achievement.title} - {self.tag.name}"
-
+    achievement = models.ForeignKey(
+        Achievement,
+        on_delete=models.CASCADE,
+        related_name='tag_links'
+    )
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        related_name='achievement_links'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
-        verbose_name = "Тег достижения"
-        verbose_name_plural = "Теги достижений"
+        unique_together = ('achievement', 'tag')
+    
+    def __str__(self):
+        return f"{self.achievement} - {self.tag}"
